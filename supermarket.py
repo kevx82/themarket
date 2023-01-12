@@ -46,10 +46,13 @@ class Supermarket:
     def checkout_customer(self):
         pass
 
-    def add_customer(self):
+    def add_customer(self, timestamp):
         pass
 
     def open_market(self):
+        """
+        In this method new customers enter the supermarket, move around and checkout at the end.
+        """
         self.current_time =  self.open
         while self.current_time < self.close:
             if self.current_time.minute == 0:
