@@ -4,21 +4,33 @@ from products import Products
 
 class Customer:
 
-    def __init__(self, location, shopping_cart, stolen_article) -> None:
+    def __init__(self, tm, entry, timestamp) -> None:
         """"
         Initiate the Customer
         """"
-        self.location = location
-        self.shopping_cart = shopping_cart
-        self.stolen_article = stolen_article
+        self.tm = tm
+        self.destination = self.tm.columns
+        self.location = self.next_location(self.destination, entry)
+
+        self.shopping_cart = []
+        self.stolen_article = []
+        self.transition = []
+        self.move(timestamp)
         self.prd = Products()
 
-    def move(self):
+    def next_location(self, probs):
+        new_location = np.random.choice(self.destination, p=probs)
+
+    def move(self, timestamp):
         """"
         Moves the customer to a random location
         """"
-        new_location = 
-        location = new_location
+        probs = tm[tm.index == self.location].values[0] # da es ein doppelarray ist, möchte ich den 1. bekommen
+        new_location = self.next_location(destination, probs)
+
+        if new_location != self.location:
+            self.transition.append({timestamp:new_location})
+        self.location = new_location
 
 
     def pick_product(self):
@@ -31,7 +43,7 @@ class Customer:
 
     def buy_or_steal(self, product, price):
         """"
-        Buy or steal product and save it
+        Buy or steal product and add them to the corresponding list
         """"
         if np.random.uniform() > 0.8:
             print(f"The customer stole {product}.")
