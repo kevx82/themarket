@@ -61,7 +61,7 @@ class TMGenerator:
             tm_df = pd.crosstab(day_df['from'], day_df['location'], normalize='index')
 
             # save entry probabilities in entry dict
-            self.entry_dict[day] = tm_df[tm_df.index == 'checkout'].values
+            self.entry_dict[day] = tm_df[tm_df.index == 'checkout'].values[0]
 
             # creates correct transition for checkout
             checkout = pd.DataFrame([[1, 0 , 0 , 0, 0]], index=['checkout'], columns=tm_df.columns)
