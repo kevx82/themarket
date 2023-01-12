@@ -25,5 +25,6 @@ if __name__ == '__main__':
 
     # print transition matrix for monday
     logging.info(tmgen.tm_dict[day])
+    logging.info(tmgen.entry_dict[day])
     super_market.open_market()
 
