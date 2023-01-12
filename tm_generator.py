@@ -5,10 +5,6 @@ import logging
 import pandas as pd
 
 
-# sets level for logging
-logging.basicConfig(level=logging.INFO)
-
-
 class TMGenerator:
 
     def __init__(self, path) -> None:
