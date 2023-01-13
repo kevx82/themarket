@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 import numpy as np
-#from products import Products
+from products import Products
 
 class Customer:
 
@@ -20,9 +20,9 @@ class Customer:
         self.shopping_cart = []
         self.stolen_article = []
         # dict for all transitions
-        self.transition = {'timestamp': [], 'location': [], 'customer_no': []}
+        self.transition = {'timestamp': [], 'location': [], 'customer_no': [], 'product': []}
 
-        #self.prd = Products()
+        self.prd = Products()
 
     def next_location(self, probs):
          return np.random.choice(self.destination, p=probs)
@@ -49,24 +49,43 @@ class Customer:
 
             # adding new position to transition list
             self.add_transition(timestamp)
+
+    def add_to_cart(self, product = None, buy = 0, steal = 0):
+        """
+        This methods adds the product into the transition and adds the price 
+        of it either into the buy oder steal cart.
+
+        Parameters:
+            product: name of the product
+            buy: price for the shopping cart
+            steal: price for the stolen articles
+        """
+        self.transition['product'].append(product)
+        self.stolen_article.append(steal)
+        self.shopping_cart.append(buy)
+
         
-'''
     def pick_product(self):
         """
         Picks a random product
         """
-        department_products = self.prd.shopping_department[self.location]
-        product_choice = np.random.choice(list(department_products.keys()))
-        self.buy_or_steal()
+        for location in self.transition['location']:
+            if location != 'checkout':
+                department_products = self.prd.all_products[location]
+                product_choice = np.random.choice(department_products)
+                product = list(product_choice.keys())[0]
+                price = list(product_choice.values())[0]
+                self.buy_or_steal(product, price)
+            else:
+                self.add_to_cart()
 
     def buy_or_steal(self, product, price):
         """
         Buy or steal product and add them to the corresponding list
         """
-        if np.random.uniform() > 0.8:
-            print(f"The customer stole {product}.")
-            self.stolen_article = self.stolen_article.append({product:price})
+        if np.random.uniform() > 0.9:
+            logging.info(f"The customer stole {product}.")
+            self.add_to_cart(product, steal=price)
         else: 
-            print(f"The customer add {product} to the shopping cart.")
-            self.shopping_cart = self.shopping_cart.append({product:price})
-'''
+            #print(f"The customer add {product} to the shopping cart.")
+            self.add_to_cart(product, buy=price)
