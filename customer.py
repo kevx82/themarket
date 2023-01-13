@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 import numpy as np
 #from products import Products
@@ -42,11 +44,12 @@ class Customer:
 
          # checking for new location
         if new_location != self.location:
+            # changing current position to new location
+            self.location = new_location
+
             # adding new position to transition list
             self.add_transition(timestamp)
         
-        # changing current position to new location
-        self.location = new_location
 '''
     def pick_product(self):
         """
