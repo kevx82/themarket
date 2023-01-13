@@ -30,14 +30,15 @@ if __name__ == '__main__':
     tmgen = TMGenerator(path=path)
 
     # print transition matrix for monday
-    logging.info(f"Transition Matrix for {day}: \n {tmgen.tm_dict[day]}")
-    logging.info(f"Entry Vector: \n {tmgen.entry_dict[day]}")
+    logging.info(f"Transition Matrix for {day}: \n {tmgen.tm_dict[day]}\n")
+    logging.info(f"Entry Vector: \n {tmgen.entry_dict[day]} \n")
 
     # initiate the Supermarket
     super_market = Supermarket(tm=tmgen.tm_dict[day], entry=tmgen.entry_dict[day], date="2022-01-02")
     #super_market = 
     run_super_market(super_market)
     
+    logging.info("\n\nStats for {day} !! \n")
     logging.info(f"Revenue: {super_market.revenue}")
     logging.info(f"Loss: {super_market.loss}")
     logging.info(f"Profit: {super_market.profit}")
