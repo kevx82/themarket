@@ -33,7 +33,9 @@ class Supermarket:
         self.customer_no = 0
 
         # revenue of the current day
-        self.revenue = None
+        self.revenue = 0
+        self.loss = 0
+        self.profit = 0
 
         # list of customers in the supermarket
         self.customers_active = []
@@ -127,8 +129,14 @@ class Supermarket:
         # 
         self.checkout_customer()
 
-    def calculate_revenue(self):
-        pass
+    def calculate_sales(self):
+        for customer in self.customers_inactive:
+            self.revenue = self.revenue + sum(customer.shopping_cart)
+            self.loss = self.loss + sum(customer.stolen_article)
+            self.profit = self.revenue - self.loss
 
     def pick_products(self):
-        pass
+        for customer in self.customers_inactive:
+            customer.pick_product()
+            customer.transition['bought'] = customer.shopping_cart
+            customer.transition['stolen'] = customer.stolen_article
