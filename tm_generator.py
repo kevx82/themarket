@@ -43,6 +43,51 @@ class TMGenerator:
 
         return  pd.concat(days)
 
+    def get_no_checkout_ids(self, df):
+        all_customers = set(df['customer_no'])
+        checkout_customers = set(df.loc[df['location'] == 'checkout', 'customer_no'])
+
+        return all_customers.difference(checkout_customers)
+
+    def get_checkout_timestamp(self, df, checkout_time=None):
+        if not checkout_time:
+            checkout_time = '21:59:59'
+
+        date = df.index.strftime("%Y-%m-%d").unique()[0]
+
+        return date + ' ' + checkout_time
+
+    def get_day_checkouts(self, df, day, no_checkout_id):
+        checkouts = []
+        datetime = self.get_checkout_timestamp(df)
+
+        for customer in no_checkout_id:
+            checkout_df = pd.DataFrame([[customer, 'checkout', day]], columns=df.columns, index=[pd.to_datetime(datetime)])
+            checkouts.append(checkout_df)
+
+        return pd.concat(checkouts)
+
+
+    def append_checkouts(self, df, day):
+        no_checkout_id = self.get_no_checkout_ids(df)
+        #print(f"Missing checkouts for on {day}: {len(no_checkout_id)}")
+        if len(no_checkout_id) > 0:
+            checkout_df = self.get_day_checkouts(df, day, no_checkout_id)
+            df = pd.concat([df, checkout_df]).sort_values(by=['day', 'customer_no'])
+        else:
+            print(f"No checkouts missing for: {day}")
+        
+        # adding index name as it gets lost while appending the checkouts
+        df.index.name = 'timestamp'
+
+        return df
+
+    def resample_df(self, df):
+        df = df.groupby(['customer_no']).resample('1min').last().ffill()
+        df = df.drop(columns=['customer_no', 'day'])
+        df = df.reset_index().set_index('timestamp')
+        return df
+
     def create_tm(self):
         """
         This methods creates for all days a transition matrix and an entry vector and 
@@ -50,9 +95,15 @@ class TMGenerator:
         """
         weekdays = self.get_weekdays()        
 
-        for day in weekdays:
+        for day in weekdays: 
             # creates subset of dataframe for current day
             day_df = self.df[self.df['day'] == day].copy()
+
+            # appends missing checkouts
+            day_df = self.append_checkouts(day_df, day)
+
+            # resample timestamp to 1 min steps
+            day_df = self.resample_df(day_df)
 
             # adds column from with previos location
             day_df['from'] = day_df['location'].shift(1).fillna('checkout')
@@ -61,7 +112,7 @@ class TMGenerator:
             tm_df = pd.crosstab(day_df['from'], day_df['location'], normalize='index')
 
             # save entry probabilities in entry dict
-            self.entry_dict[day] = tm_df[tm_df.index == 'checkout'].values[0]
+            self.entry_dict[day] = list(tm_df[tm_df.index == 'checkout'].values[0])
 
             # creates correct transition for checkout
             checkout = pd.DataFrame([[1, 0 , 0 , 0, 0]], index=['checkout'], columns=tm_df.columns)
