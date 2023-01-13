@@ -82,27 +82,33 @@ class Supermarket:
         will be added to the checkout list. Afterwards the list of customers not located in the checkout will
         be updated.
         """
-        # checking in the transition dict of each customer if the last location is checkout and adds them to checkout list of supermarket
+        # checking in the transition dict of each customer if the last location is checkout
         checkout = [customer for customer in self.customers_active if customer.transition['location'][-1] == 'checkout']
+        # adds checked out customer to checkout list of supermarket
         self.customers_inactive.extend(checkout)
 
         # updating the list of all customers in the supermarket whose last location is not checkout
         self.customers_active[:] = [customer for customer in self.customers_active if customer.transition['location'][-1] != 'checkout']
 
-
     def open_market(self):
         """
         In this method new customers enter the supermarket, move around and checkout at the end.
         """
+        # declare current time as opening time
         current_time =  self.open
+        # set global time of supermarket to timestamp
         self.update_timestamp(current_time)
+
+        # loop (supermarket open) until closing time and simulate customers
         while current_time < self.close:
             self.move_customer()
             self.add_customer()
             self.checkout_customer()
             if current_time.minute == 0:
                 logging.info(f"current time: {current_time}")
+            # increase current time by 1 minute
             current_time = current_time + pd.DateOffset(minutes=1)
+            # update global time of supermarket to timestamp
             self.update_timestamp(current_time)
 
     def close_market(self):
@@ -111,10 +117,14 @@ class Supermarket:
         is set to checkout and their transition updated with the new timestamp and location. 
         Afterwards all customer will be moved to the check out list.
         """
+        # loop through all active customers
         for customer in self.customers_active:
+            # set location of customer to checkout
             customer.location = 'checkout'
+            # adds the new location and timestamp to the transitions
             customer.add_transition(self.timestamp)
     
+        # 
         self.checkout_customer()
 
     def calculate_revenue(self):
