@@ -10,7 +10,7 @@ from supermarket import Supermarket
 logging.basicConfig(level=logging.INFO)
 
 path = 'data/'
-day = 'friday'
+day = 'monday'
 
 
 if __name__ == '__main__':
@@ -29,6 +29,4 @@ if __name__ == '__main__':
     super_market.open_market()
     super_market.close_market()
     day_df = pd.concat([pd.DataFrame(cust.transition) for cust in super_market.customers_inactive], ignore_index=True)
-    print(day_df[day_df['customer_no'] == 1])
-    print([cust.transition for cust in super_market.customers_inactive[:5]])
-
+    print(day_df.groupby(['location'])[['customer_no']].nunique())
