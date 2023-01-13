@@ -8,18 +8,20 @@ from customer import Customer
 
 class Supermarket:
 
-    def __init__(self, tm: pd.DataFrame, date:str, open:str = "7:00", close:str = "22:00") -> None:
+    def __init__(self, tm: pd.DataFrame, entry: list, date:str, open:str = "7:00", close:str = "22:00") -> None:
         """
         This method initiates the Supermarket class.
 
         Attributes:
             tm: dataframe containing the transition matrix for current day
+            entry: list of probabilities for the first location of a customer
             date: date of the current day
             open: time the supermarket opens (default 7:00)
             close: time the supermarket opens (default 7:00)
         """
 
         self.tm = tm
+        self.entry = entry
         self.date = date
         self.open = self.create_datetime(self.date, open)
         self.close = self.create_datetime(self.date, close)
@@ -28,16 +30,16 @@ class Supermarket:
         self.timestamp = None
 
         # count of total customers entered the market
-        self.customer_id = 0
+        self.customer_no = 0
 
         # revenue of the current day
         self.revenue = None
 
         # list of customers in the supermarket
-        self.customer_active = []
+        self.customers_active = []
 
         # list of customers that checked out
-        self.customer_inactive = []
+        self.customers_inactive = []
 
     def create_datetime(self, date, time):
         """
@@ -62,7 +64,8 @@ class Supermarket:
         This method add new customers to the supermarket. The chance to add a new customer is 70%.
         """
         if np.random.uniform() > 0.3:
-            customer = Customer(self.tm, self.entry)
+            self.customer_no += 1
+            customer = Customer(self.tm, self.entry, self.customer_no)
             customer.add_transition(self.timestamp)
             self.customers_active.append(customer)
 
@@ -94,9 +97,9 @@ class Supermarket:
             self.move_customer()
             self.add_customer()
             self.checkout_customer()
-            if self.current_time.minute == 0:
-                logging.info(f"current time: {self.current_time}")
-            current_time = self.current_time + pd.DateOffset(minutes=1)
+            if current_time.minute == 0:
+                logging.info(f"current time: {current_time}")
+            current_time = current_time + pd.DateOffset(minutes=1)
             self.update_timestamp(current_time)
 
     def close_market(self):
