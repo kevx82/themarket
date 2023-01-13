@@ -37,6 +37,10 @@ class Supermarket:
         self.loss = 0
         self.profit = 0
 
+        # article information
+        self.sold_articles = 0
+        self.stolen_articles = 0
+
         # list of customers in the supermarket
         self.customers_active = []
 
@@ -131,12 +135,23 @@ class Supermarket:
 
     def calculate_sales(self):
         for customer in self.customers_inactive:
+            sold = len([price for price in customer.shopping_cart if price > 0])
+            stolen = len([price for price in customer.stolen_article if price > 0])
+            
+            # calculates values for sold articles in shopping cart
             self.revenue = self.revenue + sum(customer.shopping_cart)
+            self.sold_articles = self.sold_articles + sold
+
+            # calculates values for stolen articles in stolen articles
             self.loss = self.loss + sum(customer.stolen_article)
+            self.stolen_articles = self.stolen_articles + stolen
+
+            # calculates total profit based on sold and stolen articles
             self.profit = self.revenue - self.loss
 
-    def pick_products(self):
+
+    def pick_articles(self):
         for customer in self.customers_inactive:
-            customer.pick_product()
+            customer.pick_article()
             customer.transition['bought'] = customer.shopping_cart
             customer.transition['stolen'] = customer.stolen_article
