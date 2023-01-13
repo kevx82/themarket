@@ -63,7 +63,7 @@ class Supermarket:
         """
         This method add new customers to the supermarket. The chance to add a new customer is 70%.
         """
-        if np.random.uniform() > 0.3:
+        if np.random.uniform() > 0.2:
             self.customer_no += 1
             customer = Customer(self.tm, self.entry, self.customer_no)
             customer.add_transition(self.timestamp)
@@ -83,9 +83,12 @@ class Supermarket:
         be updated.
         """
         # checking in the transition dict of each customer if the last location is checkout and adds them to checkout list of supermarket
-        self.customers_inactive.extend([customer for customer in self.customers_active if customer.transition['location'][-1] == 'checkout'])
+        checkout = [customer for customer in self.customers_active if customer.transition['location'][-1] == 'checkout']
+        self.customers_inactive.extend(checkout)
+
         # updating the list of all customers in the supermarket whose last location is not checkout
         self.customers_active[:] = [customer for customer in self.customers_active if customer.transition['location'][-1] != 'checkout']
+
 
     def open_market(self):
         """
