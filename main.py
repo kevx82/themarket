@@ -23,6 +23,9 @@ def run_super_market(super_market):
 
 
 if __name__ == '__main__':
+    logging.info("="*60)
+    logging.info("Welcome to the one and only Supermarket")
+    logging.info("="*60 + "\n")
 
     logging.info("Generating Transition Matrix and Entry Vector")
 
@@ -38,10 +41,12 @@ if __name__ == '__main__':
     #super_market = 
     run_super_market(super_market)
     
-    logging.info("\n\nStats for {day} !! \n")
-    logging.info(f"Revenue: {super_market.revenue}")
-    logging.info(f"Loss: {super_market.loss}")
-    logging.info(f"Profit: {super_market.profit}")
+    logging.info(f"\n\nStats for {day} !! \n")
+    logging.info(f"Revenue: {round(super_market.revenue, 2)}€")
+    logging.info(f"Loss: {round(super_market.loss, 2)}€")
+    logging.info(f"Profit: {round(super_market.profit, 2)}€\n")
+    
+    logging.info(f"Total number of customers: {super_market.customer_no}")
     logging.info(f"Total amount of sold articles: {super_market.sold_articles}")
     logging.info(f"Total amount of stolen articles: {super_market.stolen_articles}")
     
