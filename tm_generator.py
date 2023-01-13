@@ -1,6 +1,5 @@
 import os
 import glob
-import logging
 
 import pandas as pd
 
@@ -44,48 +43,67 @@ class TMGenerator:
         return  pd.concat(days)
 
     def get_no_checkout_ids(self, df):
+        """
+        This method returns all numbers of customers for a day that didn't checkout.
+
+        Returns:
+            set of numbers
+        """
+        # creates a set of all customer numbers
         all_customers = set(df['customer_no'])
+
+        # creates a set of all customers with checkout
         checkout_customers = set(df.loc[df['location'] == 'checkout', 'customer_no'])
 
         return all_customers.difference(checkout_customers)
 
     def get_checkout_timestamp(self, df, checkout_time=None):
-        if not checkout_time:
-            checkout_time = '21:59:59'
+        """
+        This method generates a timestamp for the checkout of the current day as string.
 
+        Returns: 
+            string with timestamp
+        """
+        # if no specific checkout time is set the following wil be used
+        if not checkout_time:
+            checkout_time = '21:59:00'
+
+        # converts datetime into string and takesthe first value of the unqiue list
         date = df.index.strftime("%Y-%m-%d").unique()[0]
 
         return date + ' ' + checkout_time
 
-    def get_day_checkouts(self, df, day, no_checkout_id):
-        checkouts = []
-        datetime = self.get_checkout_timestamp(df)
-
-        for customer in no_checkout_id:
-            checkout_df = pd.DataFrame([[customer, 'checkout', day]], columns=df.columns, index=[pd.to_datetime(datetime)])
-            checkouts.append(checkout_df)
-
-        return pd.concat(checkouts)
-
-
     def append_checkouts(self, df, day):
+        """
+        This methods appends the missing checkouts for each customer.
+
+        Returns:
+            df: dataframe with added checkouts
+        """
         no_checkout_id = self.get_no_checkout_ids(df)
-        #print(f"Missing checkouts for on {day}: {len(no_checkout_id)}")
+
         if len(no_checkout_id) > 0:
-            checkout_df = self.get_day_checkouts(df, day, no_checkout_id)
-            df = pd.concat([df, checkout_df]).sort_values(by=['day', 'customer_no'])
-        else:
-            print(f"No checkouts missing for: {day}")
-        
-        # adding index name as it gets lost while appending the checkouts
+            datetime = self.get_checkout_timestamp(df)
+            for customer in no_checkout_id:
+                checkout_df = pd.DataFrame([[customer, 'checkout', day]], columns=df.columns, index=[pd.to_datetime(datetime)])
+                pd.concat([df, checkout_df])
+
         df.index.name = 'timestamp'
+        df = df.sort_values(by= 'customer_no')
 
         return df
 
     def resample_df(self, df):
+        """
+        This method resample the timestamp to 1 minute steps.
+
+        Returns:
+            df: dataframe with resampled timestamps
+        """
         df = df.groupby(['customer_no']).resample('1min').last().ffill()
         df = df.drop(columns=['customer_no', 'day'])
         df = df.reset_index().set_index('timestamp')
+        
         return df
 
     def create_tm(self):
