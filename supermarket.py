@@ -47,9 +47,13 @@ class Supermarket:
         # list of customers that checked out
         self.customers_inactive = []
 
-    def create_datetime(self, date, time):
+    def create_datetime(self, date, time) -> pd.DatetimeIndex:
         """
         In this method a datetime will be created based on the passed date and time
+        
+        Args:
+            date: date of the current day
+            time: time of the current day
 
         Returns:
             datetime: timestamp of date and time
@@ -134,6 +138,9 @@ class Supermarket:
         self.checkout_customer()
 
     def calculate_sales(self):
+        """
+        This method calculates the revenue, loss, profit, sold and stolen articles for all customers.
+        """
         for customer in self.customers_inactive:
             sold = len([price for price in customer.shopping_cart if price > 0])
             stolen = len([price for price in customer.stolen_article if price > 0])
@@ -151,6 +158,10 @@ class Supermarket:
 
 
     def pick_articles(self):
+        """
+        In this method each customer will pick articles for each transition. All prices for bought and stolen
+        products will be added to the transition.
+        """
         for customer in self.customers_inactive:
             customer.pick_article()
             customer.transition['bought'] = customer.shopping_cart
