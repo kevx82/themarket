@@ -83,6 +83,10 @@ class Customer:
     def buy_or_steal(self, article, price):
         """
         Buy or steal article and add them to the corresponding list
+        
+        Args:
+            article: name of the article
+            price: price of the article
         """
         if np.random.uniform() > 0.9:
             logging.info(f"The customer stole {article}.")
