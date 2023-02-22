@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 import numpy as np
+
 from articles import Articles
 
 class Customer:
