@@ -13,7 +13,30 @@ path = 'data/'
 day = 'friday'
 
 
+def print_daily_report(day, super_market):
+    """
+    Prints information about the revenue, customers and articles.
+    
+    Args:
+        day: current day of simulation
+        super_market: supermarket object containing information
+    """
+    logging.info(f"\n\nStats for {day} !! \n")
+    logging.info(f"Revenue: {round(super_market.revenue, 2)}€")
+    logging.info(f"Loss: {round(super_market.loss, 2)}€")
+    logging.info(f"Profit: {round(super_market.profit, 2)}€\n")
+    
+    logging.info(f"Total number of customers: {super_market.customer_no}")
+    logging.info(f"Total amount of sold articles: {super_market.sold_articles}")
+    logging.info(f"Total amount of stolen articles: {super_market.stolen_articles}")
+
 def run_super_market(super_market):
+    """
+    Simulates a day of a supermarket.
+    
+    Args:
+        super_market: the supermarket object for simulation
+    """
     super_market.open_market()
     super_market.close_market()
     super_market.pick_articles()
@@ -38,19 +61,5 @@ if __name__ == '__main__':
 
     # initiate the Supermarket
     super_market = Supermarket(tm=tmgen.tm_dict[day], entry=tmgen.entry_dict[day], date="2022-01-02")
-    #super_market = 
     run_super_market(super_market)
-    
-    logging.info(f"\n\nStats for {day} !! \n")
-    logging.info(f"Revenue: {round(super_market.revenue, 2)}€")
-    logging.info(f"Loss: {round(super_market.loss, 2)}€")
-    logging.info(f"Profit: {round(super_market.profit, 2)}€\n")
-    
-    logging.info(f"Total number of customers: {super_market.customer_no}")
-    logging.info(f"Total amount of sold articles: {super_market.sold_articles}")
-    logging.info(f"Total amount of stolen articles: {super_market.stolen_articles}")
-    
-
-    #day_df = pd.concat([pd.DataFrame(cust.transition) for cust in super_market.customers_inactive], ignore_index=True)
-    #print(day_df.groupby(['location'])[['customer_no']].nunique())
-    #print(day_df[day_df['customer_no'].isin(range(5))].sort_values(by='timestamp'))
+    print_daily_report(day, super_market)
