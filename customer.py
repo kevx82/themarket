@@ -9,7 +9,12 @@ class Customer:
 
     def __init__(self, tm, entry, customer_no) -> None:
         """
-        Initiate the Customer
+        Initiates the Customer
+        
+        Args:
+            tm: transition matrix containing the locations and their probabilities
+            entry: probability for all locations when entering the supermarket
+            customer_no: number of customer
         """
         self.tm = tm
         self.entry = entry
@@ -26,9 +31,21 @@ class Customer:
         self.prd = Articles()
 
     def next_location(self, probs):
-         return np.random.choice(self.destination, p=probs)
+        """
+        This method defines the next locaton based on the probabilities of all locations.
+        
+        Args:
+            probs: probabilities for all locations
+        """
+        return np.random.choice(self.destination, p=probs)
 
     def add_transition(self, timestamp):
+        """
+        This method adds the timestamp, location and customer number to the transition dict
+        
+        Args:
+            timestamp: timestamp of the current day
+        """
         self.transition['timestamp'].append(timestamp)
         self.transition['location'].append(self.location)
         self.transition['customer_no'].append(self.customer_no)
@@ -36,6 +53,9 @@ class Customer:
     def move(self, timestamp):
         """
         Moves the customer to a random location
+        
+        Args:
+            timestamp: timestamp of the current day
         """
         # getting probabilities for destinations of current location
         # da es ein doppelarray ist, möchte ich den 1. bekommen
@@ -56,7 +76,7 @@ class Customer:
         This methods adds the article into the transition and adds the price 
         of it either into the buy oder steal cart.
 
-        Parameters:
+        Args:
             article: name of the article
             buy: price for the shopping cart
             steal: price for the stolen articles
