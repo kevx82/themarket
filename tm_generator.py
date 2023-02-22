@@ -7,6 +7,12 @@ import pandas as pd
 class TMGenerator:
 
     def __init__(self, path) -> None:
+        """
+        This method initiates the TMGenerator
+        
+        Args:
+            path: path to the file to generate the transition matrix
+        """
         self.path = path
         self.tm_dict = {}
         self.entry_dict = {}
@@ -17,11 +23,16 @@ class TMGenerator:
         # generate the transition matrix based on the dataframe
         self.create_tm()
 
-    def get_weekdays(self):
-        return self.df['day'].unique()
-
+    def get_weekdays(self) -> list:
+        """
+        This method returns a list with weekdays
+        
+        Returns:
+            list of weekdays
+        """
+        return list(self.df['day'].unique())
     
-    def read_days(self):
+    def read_days(self) -> pd.DataFrame:
         """
         This methods reads all csv fle from the path and returns oned ataframe for days.
 
@@ -42,9 +53,12 @@ class TMGenerator:
 
         return  pd.concat(days)
 
-    def get_no_checkout_ids(self, df):
+    def get_no_checkout_ids(self, df) -> set:
         """
         This method returns all numbers of customers for a day that didn't checkout.
+        
+        Args:
+            df: dataframe containing customer ids
 
         Returns:
             set of numbers
@@ -57,9 +71,13 @@ class TMGenerator:
 
         return all_customers.difference(checkout_customers)
 
-    def get_checkout_timestamp(self, df, checkout_time=None):
+    def get_checkout_timestamp(self, df, checkout_time=None) -> str:
         """
         This method generates a timestamp for the checkout of the current day as string.
+        
+        Args:
+            df: dataframe containing datetimes
+            checkout_time: time for checkout
 
         Returns: 
             string with timestamp
@@ -76,6 +94,10 @@ class TMGenerator:
     def append_checkouts(self, df, day):
         """
         This methods appends the missing checkouts for each customer.
+        
+        Args:
+            df: dataframe with transitions for each customer
+            day: name of the weekday
 
         Returns:
             df: dataframe with added checkouts
