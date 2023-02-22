@@ -1,7 +1,4 @@
-import os
 import logging
-
-import pandas as pd
 
 from tm_generator import TMGenerator
 from supermarket import Supermarket
