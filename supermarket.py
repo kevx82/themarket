@@ -134,7 +134,6 @@ class Supermarket:
             # adds the new location and timestamp to the transitions
             customer.add_transition(self.timestamp)
     
-        # 
         self.checkout_customer()
 
     def calculate_sales(self):
